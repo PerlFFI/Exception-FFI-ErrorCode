@@ -79,4 +79,17 @@ subtest 'basic' => sub {
 
 };
 
+subtest 'exceptions' => sub {
+
+  subtest 'bad option' => sub {
+
+    like(
+      dies { Exception::FFI::ErrorCode->import('foo' => 'bar') },
+      qr/^Unknown options: foo/
+    );
+
+  };
+
+};
+
 done_testing;
