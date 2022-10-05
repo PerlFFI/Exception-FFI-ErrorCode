@@ -25,7 +25,7 @@ Throwing:
      $xsub->($code);
    });
  }
-
+ 
  # foo is an unknown option, so this will return 48
  my $code = $curl->setopt( "foo" => "bar" );
  # throw as an exception
@@ -57,7 +57,7 @@ Catching:
      my $human    = $ex->strerror;  # human readable error
      my $diag     = $ex->as_string; # human readable error at filename.pl line xxx
      my $diag     = "$ex";          # same as $ex->as_string
-
+ 
      if($ex->code == Curl::Error::UNKNOWN_OPTION) {
        # handle the unknown option variant of this error
      }
@@ -102,7 +102,7 @@ The error codes.  This is a hash reference.  The keys are the constant names, in
 Perl these are usually all upper case like C<FOO_BAD_FILENAME>.  The values can be either
 an integer constant, or an array reference with the integer constant and human readable
 diagnostic.  The former is intended for when there is a C<strerror> type function that
-will convert the error code into a diagnostic for you. 
+will convert the error code into a diagnostic for you.
 
 =item const_class
 
@@ -180,19 +180,25 @@ The integer error code.
 
   sub import ($, %args)
   {
-    my $class = $args{class} || caller;
+    my $class       = delete $args{class}       || caller;
+    my $const_class = delete $args{const_class} || $class;
+    my $codes       = delete $args{codes}       || {};
+
+    if(%args) {
+      require Carp;
+      Carp::croak("Unknown options: @{[ sort keys %args ]}");
+    }
 
     {
       no strict 'refs';
       push @{ "$class\::ISA" }, 'Exception::FFI::ErrorCode::Base';
     }
 
-    my $const_class = $args{const_class} || $class;
 
-    foreach my $name (keys $args{codes}->%*)
+    foreach my $name (keys $codes->%*)
     {
       my($code, $human) = do {
-        my $v = $args{codes}->{$name};
+        my $v = $codes->{$name};
         is_plain_arrayref $v ? @$v : ($v,$name);
       };
       constant->import("$const_class\::$name", $code);

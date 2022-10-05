@@ -102,7 +102,7 @@ Options include:
     Perl these are usually all upper case like `FOO_BAD_FILENAME`.  The values can be either
     an integer constant, or an array reference with the integer constant and human readable
     diagnostic.  The former is intended for when there is a `strerror` type function that
-    will convert the error code into a diagnostic for you. 
+    will convert the error code into a diagnostic for you.
 
 - const\_class
 
