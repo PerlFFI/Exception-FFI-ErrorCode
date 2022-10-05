@@ -50,8 +50,7 @@ Catching:
    might_die;
  };
  if(my $ex = $@) {
-   if($ex isa 'CurlError')
-   {
+   if($ex isa 'CurlError') {
      my $package  = $ex->package;   # the package where thrown
      my $filename = $ex->filename;  # the filename where thrown
      my $line     = $ex->line;      # the linenumber where thrown
@@ -60,8 +59,7 @@ Catching:
      my $diag     = $ex->as_string; # human readable error at filename.pl line xxx
      my $diag     = "$ex";          # same as $ex->as_string
 
-     if($ex->code == CurlError::UNKNOWN_OPTION)
-     {
+     if($ex->code == CurlError::UNKNOWN_OPTION) {
        # handle the unknown option variant of this error
      }
    }
