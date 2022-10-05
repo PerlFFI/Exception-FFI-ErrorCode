@@ -7,7 +7,6 @@ package Exception::FFI::ErrorCode {
   use Ref::Util qw( is_plain_arrayref );
 
   # ABSTRACT: Exception class based on integer error codes common in C code
-  # VERSION
 
 =head1 SYNOPSIS
 
