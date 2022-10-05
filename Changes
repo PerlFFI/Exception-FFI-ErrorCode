@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Import will croak if you provide a bad option (gh#6, gh#7)
+  - Documentation improvements (gh#5, gh#8)
 
 0.01      2022-10-05 07:42:34 -0600
   - initial version
