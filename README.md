@@ -8,7 +8,7 @@ Throwing:
 
 ```perl
 # realish world example for use with libcurl
-package CurlError {
+package Curl::Error {
   use Exception::FFI::ErrorCode
     code => {
       CURLE_OK                   => 0,
@@ -24,13 +24,13 @@ package CurlError {
 # foo is an unknown option, so this will return 48
 my $code = $curl->setopt( "foo" => "bar" );
 # throw as an exception
-CurlError->throw( code => $code ) if $code != CurlError::CURLE_OK;
+Curl::Error->throw( code => $code ) if $code != Curl::Error::CURLE_OK;
 ```
 
 Defining error class without a strerror
 
 ```perl
-package CurlError {
+package Curl::<Error {
   use Exception::FFI::ErrorCode
     code => {
       CURLE_OK                   => [ 0,  'no error'                        ],
@@ -44,11 +44,11 @@ package CurlError {
 Catching:
 
 ```perl
-eval {
+try {
   might_die;
-};
-if(my $ex = $@) {
-  if($ex isa 'CurlError') {
+}
+catch ($ex) {
+  if($ex isa Curl::Error) {
     my $package  = $ex->package;   # the package where thrown
     my $filename = $ex->filename;  # the filename where thrown
     my $line     = $ex->line;      # the linenumber where thrown
@@ -57,7 +57,7 @@ if(my $ex = $@) {
     my $diag     = $ex->as_string; # human readable error at filename.pl line xxx
     my $diag     = "$ex";          # same as $ex->as_string
 
-    if($ex->code == CurlError::UNKNOWN_OPTION) {
+    if($ex->code == Curl::Error::UNKNOWN_OPTION) {
       # handle the unknown option variant of this error
     }
   }
