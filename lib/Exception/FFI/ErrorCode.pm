@@ -120,7 +120,8 @@ The base class provides these attributes and methods:
 
  Exception::FFI::ErrorCode::Base->throw( code => $code );
 
-Throws the exception with the given code.
+Throws the exception with the given code.  Obviously you would throw the subclass, not the
+base class.
 
 =head2 strerror
 
