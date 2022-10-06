@@ -80,6 +80,10 @@ handles determining the location of where the exception was thrown and will stri
 in a way to look like a regular Perl string exception with the filename and line number
 you would expect.
 
+A stack trace can be generated, either on a per-subclass basis, or globally via an
+environment variable.  This is not done by default due to the overhead involved.
+See the [trace method](#trace) for details.
+
 This class will attempt to detect if [Carp::Always](https://metacpan.org/pod/Carp::Always) is running and produce a long message
 when stringified, as it already does for regular string exceptions.  By default it will
 **only** do this if [Carp::Always](https://metacpan.org/pod/Carp::Always) is running when this module is loaded.  Since
@@ -192,10 +196,38 @@ my $code = $ex->code;
 
 The integer error code.
 
+## trace
+
+```perl
+my $trace = $ex->trace;
+```
+
+This will return a [Devel::StackTrace](https://metacpan.org/pod/Devel::StackTrace) trace, if it was recorded when the exception was
+thrown.  Generally the trace will only be generated if `EXCEPTION_FFI_ERROR_CODE_STACK_TRACE`
+set to a true value.  Individual subclasses may also choose to always generate a stack
+trace.
+
+## get\_stack\_trace
+
+```perl
+my $trace = $ex->get_stack_trace;
+```
+
+This is the method that is called internally to generate a stack trace.  By default this
+is only done if `EXCEPTION_FFI_ERROR_CODE_STACK_TRACE` is set to true.  If you want
+a stack trace to **always** be generated, you can override this method in your subclass.
+
 # CAVEATS
 
 The [Carp::Always](https://metacpan.org/pod/Carp::Always) detection is pretty solid, but if [Carp::Always](https://metacpan.org/pod/Carp::Always) is off when the
 exception is thrown but on when it is stringified then strange things might happen.
+
+# ENVIRONMENT
+
+- `EXCEPTION_FFI_ERROR_CODE_STACK_TRACE`
+
+    If this environment variable is set to a true value, then a stack trace will be generated
+    and attached to all exceptions managed by [Exception::FFI::ErrorCode](https://metacpan.org/pod/Exception::FFI::ErrorCode).
 
 # SEE ALSO
 

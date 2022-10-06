@@ -12,6 +12,7 @@ my $post_diag;
 $modules{$_} = $_ for qw(
   Carp
   Class::Tiny
+  Devel::StackTrace
   ExtUtils::MakeMaker
   Ref::Util
   Sub::Identify
