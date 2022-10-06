@@ -178,7 +178,12 @@ The line number where the exception happened.
 
 The integer error code.
 
-=head2 SEE ALSO
+=head1 CAVEATS
+
+The L<Carp::Always> detection is pretty solid, but if L<Carp::Always> is off when the
+exception is thrown but on when it is stringified then strange things might happen.
+
+=head1 SEE ALSO
 
 =over 4
 

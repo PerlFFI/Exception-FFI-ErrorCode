@@ -192,7 +192,12 @@ my $code = $ex->code;
 
 The integer error code.
 
-## SEE ALSO
+# CAVEATS
+
+The [Carp::Always](https://metacpan.org/pod/Carp::Always) detection is pretty solid, but if [Carp::Always](https://metacpan.org/pod/Carp::Always) is off when the
+exception is thrown but on when it is stringified then strange things might happen.
+
+# SEE ALSO
 
 - [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus)
 - [Exception::Class](https://metacpan.org/pod/Exception::Class)
