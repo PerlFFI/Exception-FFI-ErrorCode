@@ -3,6 +3,8 @@ Revision history for {{$dist->name}}
 {{$NEXT}}
   - Import will croak if you provide a bad option (gh#6, gh#7)
   - Documentation improvements (gh#5, gh#8)
+  - Will now detect if Carp::Always is enabled, and display an appropriately
+    verbose diagnostic when stringified if so (gh#3, gh#9)
 
 0.01      2022-10-05 07:42:34 -0600
   - initial version
