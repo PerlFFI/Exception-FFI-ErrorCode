@@ -136,7 +136,7 @@ by attaching the appropriate C function.
 
 Returns a human readable diagnostic.  This is in the form of a familiar Perl warning or
 string exception, including the filename and line number where the exception was thrown.
-If you stringify the exception it will use this method.
+If you stringify the exception it will use this method, adding a new line.
 
 =head2 package
 
@@ -211,7 +211,7 @@ The integer error code.
     use Class::Tiny qw( package filename line code );
     use Ref::Util qw( is_blessed_ref );
     use overload
-        '""' => sub { shift->as_string },
+        '""' => sub { shift->as_string . "\n" },
         bool => sub { 1 }, fallback => 1;
 
     sub throw ($proto, @rest)

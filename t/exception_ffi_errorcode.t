@@ -35,6 +35,7 @@ subtest 'basic' => sub {
       call code      => 1;
       call strerror  => 'human readable';
       call as_string => "human readable at @{[ __FILE__ ]} line $line.";
+      call sub { "$_[0]" } => "human readable at @{[ __FILE__ ]} line $line.\n";
 
     },
     'throws code 1 ok';

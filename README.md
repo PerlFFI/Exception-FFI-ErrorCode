@@ -16,8 +16,8 @@ package Curl::Error {
       ...
     };
   $ffi->attach( [ curl_easy_strerror => strerror ] => ['enum'] => 'string' => sub {
-    my($xsub, $self, $code) = @_;
-    $xsub->($code);
+    my($xsub, $self) = @_;
+    $xsub->($self->code);
   });
 }
 
