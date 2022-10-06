@@ -2,6 +2,8 @@ use Test2::V0 -no_srand => 1;
 
 subtest 'basic' => sub {
 
+  local *Exception::FFI::ErrorCode::Base::_carp_always = sub { 0 };
+
   package Ex1 {
     use Exception::FFI::ErrorCode
       codes => {
