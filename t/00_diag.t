@@ -10,9 +10,11 @@ my %modules;
 my $post_diag;
 
 $modules{$_} = $_ for qw(
+  Carp
   Class::Tiny
   ExtUtils::MakeMaker
   Ref::Util
+  Sub::Identify
   Test2::V0
   constant
 );

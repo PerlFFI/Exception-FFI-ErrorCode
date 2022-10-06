@@ -80,7 +80,23 @@ handles determining the location of where the exception was thrown and will stri
 in a way to look like a regular Perl string exception with the filename and line number
 you would expect.
 
+This class will attempt to detect if L<Carp::Always> is running and produce a long message
+when stringified, as it already does for regular string exceptions.  By default it will
+B<only> do this if L<Carp::Always> is running when this module is loaded.  Since
+typically L<Carp::Always> is loaded via the command line C<-MCarp::Always> or via
+C<PERL5OPT> environment variable this should cover all of the typical use cases, but if
+for some reason L<Carp::Always> does get loaded after this module, you can force
+redetection by calling the L<detect method|/detect>.
+
 =head1 METHODS
+
+=head2 detect
+
+ Exception::FFI::ErrorCode->detect;
+
+This will redetect if L<Carp::Always> has been loaded yet.  You do not need to call this
+method if L<Carp::Always> has been enabled or disabled (we check for that when the
+exception is thrown and stringified), just if the module has been loaded.
 
 =head2 import
 
@@ -206,12 +222,44 @@ The integer error code.
     }
   }
 
+  sub detect ($class)
+  {
+    my $sub;
+    if(Carp::Always->can('import'))
+    {
+      require Sub::Identify;
+      $Carp::CarpInternal{"Exception::FFI::ErrorCode::Base"}++;
+      $sub = sub {
+        [Sub::Identify::get_code_info($SIG{__WARN__})]->[0] eq 'Carp::Always'
+      };
+    }
+    else
+    {
+      $sub = sub { 0 };
+    }
+    no warnings 'redefine';
+    *Exception::FFI::ErrorCode::Base::_carp_always = $sub;
+  }
+
+  __PACKAGE__->detect;
+
   package Exception::FFI::ErrorCode::Base {
 
-    use Class::Tiny qw( package filename line code );
+    sub _carp_always;
+
+    use Class::Tiny qw( package filename line code _longmess );
     use Ref::Util qw( is_blessed_ref );
     use overload
-        '""' => sub { shift->as_string . "\n" },
+        '""' => sub ($self,@) {
+          if(_carp_always)
+          {
+            return $self->_longmess;
+          }
+          else
+          {
+            return $self->as_string . "\n";
+          }
+        },
         bool => sub { 1 }, fallback => 1;
 
     sub throw ($proto, @rest)
@@ -232,9 +280,10 @@ The integer error code.
           @rest,
           package  => $package,
           filename => $filename,
-          line     => $line
+          line     => $line,
         );
       }
+      $self->_longmess(Carp::longmess($self->strerror)) if _carp_always;
       die $self;
     }
 

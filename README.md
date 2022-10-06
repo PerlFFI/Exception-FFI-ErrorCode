@@ -80,7 +80,25 @@ handles determining the location of where the exception was thrown and will stri
 in a way to look like a regular Perl string exception with the filename and line number
 you would expect.
 
+This class will attempt to detect if [Carp::Always](https://metacpan.org/pod/Carp::Always) is running and produce a long message
+when stringified, as it already does for regular string exceptions.  By default it will
+**only** do this if [Carp::Always](https://metacpan.org/pod/Carp::Always) is running when this module is loaded.  Since
+typically [Carp::Always](https://metacpan.org/pod/Carp::Always) is loaded via the command line `-MCarp::Always` or via
+`PERL5OPT` environment variable this should cover all of the typical use cases, but if
+for some reason [Carp::Always](https://metacpan.org/pod/Carp::Always) does get loaded after this module, you can force
+redetection by calling the [detect method](#detect).
+
 # METHODS
+
+## detect
+
+```
+Exception::FFI::ErrorCode->detect;
+```
+
+This will redetect if [Carp::Always](https://metacpan.org/pod/Carp::Always) has been loaded yet.  You do not need to call this
+method if [Carp::Always](https://metacpan.org/pod/Carp::Always) has been enabled or disabled (we check for that when the
+exception is thrown and stringified), just if the module has been loaded.
 
 ## import
 
@@ -140,7 +158,7 @@ my $string = "$ex";
 
 Returns a human readable diagnostic.  This is in the form of a familiar Perl warning or
 string exception, including the filename and line number where the exception was thrown.
-If you stringify the exception it will use this method.
+If you stringify the exception it will use this method, adding a new line.
 
 ## package
 
