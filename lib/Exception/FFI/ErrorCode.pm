@@ -80,6 +80,10 @@ handles determining the location of where the exception was thrown and will stri
 in a way to look like a regular Perl string exception with the filename and line number
 you would expect.
 
+A stack trace can be generated, either on a per-subclass basis, or globally via an
+environment variable.  This is not done by default due to the overhead involved.
+See the L<trace method|/trace> for details.
+
 This class will attempt to detect if L<Carp::Always> is running and produce a long message
 when stringified, as it already does for regular string exceptions.  By default it will
 B<only> do this if L<Carp::Always> is running when this module is loaded.  Since
@@ -178,10 +182,38 @@ The line number where the exception happened.
 
 The integer error code.
 
+=head2 trace
+
+ my $trace = $ex->trace;
+
+This will return a L<Devel::StackTrace> trace, if it was recorded when the exception was
+thrown.  Generally the trace will only be generated if C<EXCEPTION_FFI_ERROR_CODE_STACK_TRACE>
+set to a true value.  Individual subclasses may also choose to always generate a stack
+trace.
+
+=head2 get_stack_trace
+
+ my $trace = $ex->get_stack_trace;
+
+This is the method that is called internally to generate a stack trace.  By default this
+is only done if C<EXCEPTION_FFI_ERROR_CODE_STACK_TRACE> is set to true.  If you want
+a stack trace to B<always> be generated, you can override this method in your subclass.
+
 =head1 CAVEATS
 
 The L<Carp::Always> detection is pretty solid, but if L<Carp::Always> is off when the
 exception is thrown but on when it is stringified then strange things might happen.
+
+=head1 ENVIRONMENT
+
+=over 4
+
+=item C<EXCEPTION_FFI_ERROR_CODE_STACK_TRACE>
+
+If this environment variable is set to a true value, then a stack trace will be generated
+and attached to all exceptions managed by L<Exception::FFI::ErrorCode>.
+
+=back
 
 =head1 SEE ALSO
 
@@ -252,7 +284,7 @@ exception is thrown but on when it is stringified then strange things might happ
 
     sub _carp_always;
 
-    use Class::Tiny qw( package filename line code _longmess );
+    use Class::Tiny qw( package filename line code trace _longmess );
     use Ref::Util qw( is_blessed_ref );
     use overload
         '""' => sub ($self,@) {
@@ -288,8 +320,25 @@ exception is thrown but on when it is stringified then strange things might happ
           line     => $line,
         );
       }
+      my $trace = $self->get_stack_trace;
+      $self->trace($trace) if $trace;
       $self->_longmess(Carp::longmess($self->strerror)) if _carp_always;
       die $self;
+    }
+
+    sub get_stack_trace ($)
+    {
+      if($ENV{EXCEPTION_FFI_ERROR_CODE_STACK_TRACE})
+      {
+        require Devel::StackTrace;
+        return Devel::StackTrace->new(
+          ignore_package => 'Exception::FFI::ErrorCode::Base',
+        );
+      }
+      else
+      {
+        return undef;
+      }
     }
 
     sub strerror ($self)

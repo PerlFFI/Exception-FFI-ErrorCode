@@ -1,5 +1,7 @@
 use Test2::V0 -no_srand => 1;
 
+delete $ENV{EXCEPTION_FFI_ERROR_CODE_STACK_TRACE};
+
 subtest 'basic' => sub {
 
   local *Exception::FFI::ErrorCode::Base::_carp_always = sub { 0 };
@@ -38,6 +40,7 @@ subtest 'basic' => sub {
       call strerror  => 'human readable';
       call as_string => "human readable at @{[ __FILE__ ]} line $line.";
       call sub { "$_[0]" } => "human readable at @{[ __FILE__ ]} line $line.\n";
+      call trace     => U();
 
     },
     'throws code 1 ok';
@@ -79,6 +82,25 @@ subtest 'basic' => sub {
 
     },
     'throws code 3 ok, fallback on diagnostic with integer code';
+
+  my $ex4 = dies {
+    local $ENV{EXCEPTION_FFI_ERROR_CODE_STACK_TRACE} = 1;
+    $line = __LINE__; Ex1->throw( code => 1 );
+  };
+
+  is
+    $ex4,
+    object {
+      call trace => object {
+        call [ isa => 'Devel::StackTrace' ] => T();
+        call next_frame => object {
+          call [ isa => 'Devel::StackTrace::Frame' ] => T();
+          call package => 'main';
+          call line => $line;
+        };
+      };
+    },
+    'stack trace on request';
 
 };
 
