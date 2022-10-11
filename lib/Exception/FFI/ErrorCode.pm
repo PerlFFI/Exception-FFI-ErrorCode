@@ -137,10 +137,17 @@ The base class provides these attributes and methods:
 
 =head2 throw
 
- Exception::FFI::ErrorCode::Base->throw( code => $code );
+ Exception::FFI::ErrorCode::Base->throw( code => $code, %attr );
+ Exception::FFI::ErrorCode::Base->throw( code => $code, frame => $frame, %attr );
 
 Throws the exception with the given code.  Obviously you would throw the subclass, not the
 base class.
+
+If you have added additional attributes via L<Class::Tiny> you can provide them as
+C<%attr>.
+
+If you want the exception to appear to happen from a different frame then you can
+specify it with C<$frame>.
 
 =head2 strerror
 
@@ -299,9 +306,9 @@ and attached to all exceptions managed by L<Exception::FFI::ErrorCode>.
         },
         bool => sub { 1 }, fallback => 1;
 
-    sub throw ($proto, @rest)
+    sub throw ($proto, %rest)
     {
-      my($package, $filename, $line) = caller;
+      my($package, $filename, $line) = caller( delete $rest{frame} // 0 );
 
       my $self;
       if(is_blessed_ref $proto)
@@ -314,7 +321,7 @@ and attached to all exceptions managed by L<Exception::FFI::ErrorCode>.
       else
       {
         $self = $proto->new(
-          @rest,
+          %rest,
           package  => $package,
           filename => $filename,
           line     => $line,
