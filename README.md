@@ -138,11 +138,18 @@ The base class provides these attributes and methods:
 ## throw
 
 ```perl
-Exception::FFI::ErrorCode::Base->throw( code => $code );
+Exception::FFI::ErrorCode::Base->throw( code => $code, %attr );
+Exception::FFI::ErrorCode::Base->throw( code => $code, frame => $frame, %attr );
 ```
 
 Throws the exception with the given code.  Obviously you would throw the subclass, not the
 base class.
+
+If you have added additional attributes via [Class::Tiny](https://metacpan.org/pod/Class::Tiny) you can provide them as
+`%attr`.
+
+If you want the exception to appear to happen from a different frame then you can
+specify it with `$frame`.
 
 ## strerror
 
