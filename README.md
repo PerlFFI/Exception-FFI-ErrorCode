@@ -30,7 +30,7 @@ Curl::Error->throw( code => $code ) if $code != Curl::Error::CURLE_OK;
 Defining error class without a strerror
 
 ```perl
-package Curl::<Error {
+package Curl::Error {
   use Exception::FFI::ErrorCode
     code => {
       CURLE_OK                   => [ 0,  'no error'                        ],

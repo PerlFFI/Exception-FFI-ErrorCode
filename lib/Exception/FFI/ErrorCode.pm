@@ -33,7 +33,7 @@ Throwing:
 
 Defining error class without a strerror
 
- package Curl::<Error {
+ package Curl::Error {
    use Exception::FFI::ErrorCode
      code => {
        CURLE_OK                   => [ 0,  'no error'                        ],
