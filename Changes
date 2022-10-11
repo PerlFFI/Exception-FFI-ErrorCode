@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.03      2022-10-11 10:23:32 -0600
   - Documentation improvements (gh#11)
   - Added frame option to throw (gh#12)
 
