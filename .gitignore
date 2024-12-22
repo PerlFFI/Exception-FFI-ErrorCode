@@ -2,4 +2,7 @@ Exception-FFI-ErrorCode-*
 /.build/
 *.swp
 
-
+/Exception-FFI-ErrorCode-*
+/.build
+*.old
+*.orig
